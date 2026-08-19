@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.DEV ? `http://${window.location.hostname}:3001/api` : '/api';
+const BASE_URL = import.meta.env.DEV ? `http://${window.location.hostname}:3001` : '';
+const API_URL = `${BASE_URL}/api`;
 
 export const api = {
     getAll: async () => {
@@ -51,7 +52,7 @@ export const api = {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
             // El backend devuelve algo como /uploads/123.jpg
-            return `http://localhost:3001${response.data.url}`;
+            return `${BASE_URL}${response.data.url}`;
         } catch (error) {
             console.error('Error uploading image:', error);
             throw new Error('Error al subir la imagen.');
