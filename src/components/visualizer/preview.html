@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualización con Desplazamiento Horizontal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0a0a0a;
+            color: white;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .font-mono {
+            font-family: 'JetBrains+Mono', monospace;
+        }
+
+        .btn-back {
+            background-color: #2563eb;
+            box-shadow: 0 0 20px rgba(37, 99, 235, 0.4);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-back:hover {
+            background-color: #3b82f6;
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.6);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        const RackPlan = () => {
+            const [viewMode, setViewMode] = useState('PLANTA');
+            const [selectedCol, setSelectedCol] = useState(0);
+            const [activeStack, setActiveStack] = useState("ESTANTE 01");
+
+            const rackStyle = "border border-blue-600 bg-[#0d0d1f] hover:bg-blue-900/40 transition-all duration-300 cursor-pointer flex items-center justify-center text-blue-400 text-[10px] font-mono leading-tight";
+
+            const W_TOTAL = 604;
+            const H_TOTAL = 480;
+            const toPct = (val) => `${(val / W_TOTAL) * 100}%`;
+            const hPct = (val) => `${(val / H_TOTAL) * 100}%`;
+
+            const handleRackClick = (stack, colIndex) => {
+                setActiveStack(stack);
+                setSelectedCol(colIndex);
+                setViewMode('FRONTAL');
+            };
+
+            const handleBack = () => {
+                setViewMode('PLANTA');
+            };
+
+            const getRackLabel = (stack, col, row) => {
+                if (stack === "ESTANTE 01") {
+                    return col * 5 + row + 1;
+                }
+                if (stack === "ESTANTE 02") {
+                    if (col === 0) return row < 4 ? 16 + row : null;
+                    if (col === 1) return 20 + row;
+                    if (col === 2) return 25 + row;
+                }
+                if (stack === "RACK PALETS") {
+                    // Col 1: 36, 33, 30
+                    // Col 2: 37, 34, 31
+                    // Col 3: 38, 35, 32
+                    return 30 + col + (2 - row) * 3;
+                }
+                return null;
+            };
+
+            return (
+                <div className="flex flex-col items-center justify-center min-h-screen p-6 relative">
+
+                    <div className="relative w-full max-w-4xl overflow-hidden aspect-[800/710] border border-blue-900/40 rounded-xl shadow-[0_0_100px_rgba(30,58,138,0.2)] bg-[#050510]">
+
+                        <div
+                            className="flex w-[200%] h-full transition-transform duration-600 ease-in-out"
+                            style={{ transform: viewMode === 'PLANTA' ? 'translateX(0)' : 'translateX(-50%)' }}
+                        >
+                            {/* VISTA 1: PLANTA */}
+                            <div className="w-1/2 h-full flex flex-col items-center justify-center p-8 bg-gradient-to-br from-[#050510] to-[#0a0a20]">
+                                <h2 className="mb-10 text-xl font-black text-blue-500 uppercase tracking-[0.4em] border-b border-blue-900/30 pb-4 w-full text-center">
+                                    Control de Planta
+                                </h2>
+
+                                <div className="relative w-full aspect-[604/480] border border-blue-900/50 shadow-[0_0_80px_rgba(30,58,138,0.15)] bg-black/40">
+                                    <div className="absolute top-0 left-0 flex flex-col" style={{ width: toPct(70), height: hPct(280) }}>
+                                        {[0, 1, 2].map(i => (
+                                            <div key={i} onClick={() => handleRackClick("ESTANTE 01", 2 - i)}
+                                                className={`${rackStyle} h-[33.33%] mb-[1px] hover:border-blue-300 hover:scale-[1.02] z-10`}>
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    <div className="absolute top-0 right-0 flex flex-col" style={{ width: toPct(110), height: hPct(360) }}>
+                                        {[0, 1, 2].map(i => (
+                                            <div key={i} onClick={() => handleRackClick("RACK PALETS", i)}
+                                                className={`${rackStyle} h-[33.33%] mb-[1px] hover:border-blue-300 hover:scale-[1.02] z-10`}>
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    <div className="absolute bottom-0 flex" style={{ left: toPct(130 + 84), width: toPct(93.33 * 3), height: hPct(70) }}>
+                                        {[0, 1, 2].map(i => (
+                                            <div key={i} onClick={() => handleRackClick("ESTANTE 02", 2 - i)}
+                                                className={`${rackStyle} flex-1 ${i !== 2 ? 'mr-[1px]' : ''} hover:border-blue-300 hover:scale-[1.02] z-10`}>
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    <div className="absolute bottom-0 left-0 border border-blue-900/40 bg-[#0d0d1f]" style={{ width: toPct(130), height: '10px' }}></div>
+                                </div>
+                            </div>
+
+                            {/* VISTA 2: FRONTAL */}
+                            <div className="w-1/2 h-full flex flex-col p-10 bg-[#070715]">
+                                <div className="w-full flex justify-between items-center mb-12 border-b border-orange-500/20 pb-8">
+                                    <button
+                                        onClick={handleBack}
+                                        className="btn-back px-8 py-3.5 text-white text-xs font-black uppercase tracking-[0.25em] rounded shadow-lg flex items-center gap-3 active:scale-95"
+                                    >
+                                        <span className="text-lg">←</span> VOLVER AL PLANO
+                                    </button>
+                                    <div className="text-right">
+                                        <h2 className="text-orange-500 text-2xl font-black tracking-widest uppercase leading-none mb-2">
+                                            {activeStack}
+                                        </h2>
+                                        <span className="text-orange-400/40 text-[11px] uppercase font-mono italic tracking-tight">
+                                            Sección: Columna {selectedCol + 1}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div className="flex-1 flex flex-row items-center justify-center gap-6">
+                                    {/* Etiquetas de Nivel / Medidas */}
+                                    <div className="flex flex-col h-[75%] justify-between text-[10px] text-blue-500/40 font-mono py-1 select-none text-right">
+                                        <span>MAX TOP</span>
+                                        <span>LEVEL 3</span>
+                                        <span>LEVEL 2</span>
+                                        <span>LEVEL 1</span>
+                                        <span>BASE LVL</span>
+                                    </div>
+
+                                    <div className="relative w-full max-w-2xl aspect-[280/230] border border-blue-900/60 p-[5px] shadow-[0_0_150px_rgba(123,75,18,0.2)] bg-black ring-1 ring-blue-500/10">
+                                        {activeStack === "RACK PALETS" ? (
+                                            /* RACK PALETS IRREGULAR GRID */
+                                            <div className="flex h-full w-full gap-[5px]">
+                                                {[0, 1, 2].map(colIdx => {
+                                                    const isRightCol = colIdx === 2;
+                                                    const rows = isRightCol
+                                                        ? [{ h: 120 }, { h: 120 }, { h: 100 }, { h: 190, isBase: true }]
+                                                        : [{ h: 120 }, { h: 120 }, { h: 120 }, { h: 160, isBase: true }];
+
+                                                    return (
+                                                        <div key={colIdx} className="flex-1 flex flex-col h-full gap-[5px]">
+                                                            {rows.map((row, rowIdx) => (
+                                                                <div
+                                                                    key={rowIdx}
+                                                                    style={{ flex: `${row.h} 1 0%` }}
+                                                                    className={`
+                                                                        border transition-all duration-700 relative flex flex-col items-center justify-center
+                                                                        ${(selectedCol === colIdx && !row.isBase)
+                                                                            ? 'bg-gradient-to-b from-[#7b4b12] to-[#4d2f0b] border-orange-500/40 shadow-[inset_0_0_40px_rgba(0,0,0,0.7)]'
+                                                                            : 'bg-[#0d0d1f]/40 border-blue-900/30'
+                                                                        }
+                                                                    `}
+                                                                >
+                                                                    {!row.isBase && (
+                                                                        <React.Fragment>
+                                                                            <span className={`text-[9px] font-black tracking-tighter transition-opacity duration-300 ${selectedCol === colIdx ? 'text-orange-200/40' : 'text-blue-500/20'}`}>
+                                                                                RACK
+                                                                            </span>
+                                                                            <span className={`text-xl font-black leading-none transition-opacity duration-300 ${selectedCol === colIdx ? 'text-white/90' : 'text-blue-500/30'}`}>
+                                                                                {getRackLabel(activeStack, colIdx, rowIdx)}
+                                                                            </span>
+                                                                        </React.Fragment>
+                                                                    )}
+                                                                    {row.isBase && (
+                                                                        <span className="text-[10px] font-black text-blue-400/60 uppercase tracking-tighter text-center px-2">
+                                                                            {isRightCol ? "Estante Usados" : "Labs"}
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        ) : (
+                                            /* STANDARD 5-LEVEL GRID */
+                                            <div className="flex h-full w-full gap-[5px]">
+                                                {[0, 1, 2].map(colIdx => (
+                                                    <div key={colIdx} className="flex-1 flex flex-col h-full gap-[5px]">
+                                                        {[0, 1, 2, 3, 4].map(rowIdx => {
+                                                            const zoneId = getRackLabel(activeStack, colIdx, rowIdx);
+                                                            return (
+                                                                <div
+                                                                    key={rowIdx}
+                                                                    className={`
+                                                                        flex-1 border transition-all duration-700 relative flex flex-col items-center justify-center
+                                                                        ${selectedCol === colIdx
+                                                                            ? 'bg-gradient-to-b from-[#7b4b12] to-[#4d2f0b] border-orange-500/40 shadow-[inset_0_0_40px_rgba(0,0,0,0.7)]'
+                                                                            : 'bg-[#0d0d1f]/40 border-blue-900/30 hover:bg-blue-900/20'
+                                                                        }
+                                                                    `}
+                                                                >
+                                                                    {zoneId && (
+                                                                        <React.Fragment>
+                                                                            <span className={`text-[9px] font-black tracking-tighter transition-opacity duration-300 ${selectedCol === colIdx ? 'text-orange-200/40' : 'text-blue-500/20'}`}>
+                                                                                RACK
+                                                                            </span>
+                                                                            <span className={`text-xl font-black leading-none transition-opacity duration-300 ${selectedCol === colIdx ? 'text-white/90' : 'text-blue-500/30'}`}>
+                                                                                {zoneId < 10 ? `0${zoneId}` : zoneId}
+                                                                            </span>
+                                                                        </React.Fragment>
+                                                                    )}
+                                                                </div>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<RackPlan />);
+    </script>
+</body>
+
+</html>

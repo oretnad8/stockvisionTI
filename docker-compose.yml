@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: stockvision_app
+    ports:
+      - "3001:3001"
+    volumes:
+      # Montar la base de datos y la carpeta de imágenes para que no se pierdan si el contenedor se reinicia
+      - ./server/database.sqlite:/app/server/database.sqlite
+      - ./server/uploads:/app/server/uploads
+    restart: unless-stopped
