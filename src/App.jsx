@@ -30,7 +30,7 @@ const AppContent = () => {
 
     return (
         <div 
-            className="flex bg-slate-50 dark:bg-[#0f1115] min-h-screen font-display antialiased"
+            className="flex flex-col md:flex-row bg-slate-50 dark:bg-[#0f1115] min-h-screen font-display antialiased"
             onClick={() => {
                 if (view === 'locations' || view === 'visualizer') {
                     setSearchTerm('');

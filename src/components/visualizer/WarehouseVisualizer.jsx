@@ -102,10 +102,10 @@ const WarehouseVisualizer = ({ isSelector = false, readOnlyLocation = null, init
         );
 
         return (
-            <div className="w-full flex flex-col items-center gap-6 p-6 bg-[#050510] rounded-xl overflow-x-auto min-w-[700px]">
+            <div className="w-full flex items-center md:justify-center p-4 md:p-6 bg-[#050510] rounded-xl overflow-x-auto">
                 <div
-                    className="relative w-full shadow-[0_0_80px_rgba(30,58,138,0.15)]"
-                    style={{ maxWidth: '1100px', minWidth: '700px', aspectRatio: `${W_TOTAL} / ${H_TOTAL}` }}
+                    className="relative shrink-0 shadow-[0_0_80px_rgba(30,58,138,0.15)]"
+                    style={{ height: '65vh', minHeight: '400px', maxHeight: '700px', aspectRatio: `${W_TOTAL} / ${H_TOTAL}` }}
                 >
                     {/* FRANJA SUPERIOR */}
                     <div className="absolute top-0 left-0 w-full flex bg-gradient-to-b from-[#1a1204] to-[#0d0d1f]" style={{ height: toPct(H_TOP, H_TOTAL) }}>
@@ -275,10 +275,10 @@ const WarehouseVisualizer = ({ isSelector = false, readOnlyLocation = null, init
         };
 
         return (
-            <div className="w-full flex flex-col items-center gap-6 p-6 bg-[#050510] rounded-xl overflow-x-auto min-w-[700px]">
+            <div className="w-full flex items-center md:justify-center p-4 md:p-6 bg-[#050510] rounded-xl overflow-x-auto">
                 <div
-                    className="relative w-full shadow-[0_0_80px_rgba(30,58,138,0.15)]"
-                    style={{ maxWidth: '850px', minWidth: '700px', aspectRatio: `${W_TOTAL} / ${H_TOTAL}` }}
+                    className="relative shrink-0 shadow-[0_0_80px_rgba(30,58,138,0.15)]"
+                    style={{ height: '65vh', minHeight: '400px', maxHeight: '700px', aspectRatio: `${W_TOTAL} / ${H_TOTAL}` }}
                 >
                     {/* FRANJA SUPERIOR (Techo) */}
                     <div className="absolute top-0 left-0 w-full flex bg-gradient-to-b from-[#1a1204] to-[#0d0d1f]" style={{ height: toPct(H_TOP, H_TOTAL) }}>
@@ -319,8 +319,8 @@ const WarehouseVisualizer = ({ isSelector = false, readOnlyLocation = null, init
 
     return (
         <div className={`bg-[#0f172a] rounded-xl shadow-lg border border-slate-800 overflow-hidden ${isSelector ? '' : 'mb-6'} animate-in fade-in duration-500 w-full`}>
-            <div className="flex items-center justify-between p-6 border-b border-slate-800/50">
-                <div className="flex-1">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between p-6 border-b border-slate-800/50 gap-4">
+                <div className="flex-1 w-full">
                     <h2 className="text-xl font-bold text-white flex items-center gap-2">
                         <MapPin className="text-blue-500" size={24} />
                         {isSelector ? 'Seleccionar Ubicación' : 'Visualizador de Almacén'}
@@ -331,25 +331,25 @@ const WarehouseVisualizer = ({ isSelector = false, readOnlyLocation = null, init
                             : 'Haz clic en un módulo o gaveta para filtrar los ítems en esa ubicación.'}
                     </p>
                 </div>
-                <div className="flex items-center gap-4">
-                    <div className="flex bg-slate-800/80 p-1 rounded-lg border border-slate-700/50" onClick={e => e.stopPropagation()}>
+                <div className="flex items-center gap-4 w-full md:w-auto">
+                    <div className="flex w-full md:w-auto bg-slate-800/80 p-1 rounded-lg border border-slate-700/50" onClick={e => e.stopPropagation()}>
                         <button
                             onClick={() => setActiveTab('oficina')}
-                            className={`px-6 py-2.5 rounded-md text-sm font-bold transition-all ${activeTab === 'oficina'
+                            className={`flex-1 md:flex-none px-2 md:px-6 py-2.5 rounded-md text-xs md:text-sm font-bold transition-all ${activeTab === 'oficina'
                                 ? 'bg-blue-600 text-white shadow-md'
                                 : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'
                                 }`}
                         >
-                            Oficina TI (Mueble)
+                            Oficina TI
                         </button>
                         <button
                             onClick={() => setActiveTab('bodega')}
-                            className={`px-6 py-2.5 rounded-md text-sm font-bold transition-all ${activeTab === 'bodega'
+                            className={`flex-1 md:flex-none px-2 md:px-6 py-2.5 rounded-md text-xs md:text-sm font-bold transition-all ${activeTab === 'bodega'
                                 ? 'bg-blue-600 text-white shadow-md'
                                 : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'
                                 }`}
                         >
-                            Bodega TI (Sala)
+                            Bodega TI
                         </button>
                     </div>
                     {isSelector && onClose && (
