@@ -3,6 +3,52 @@ import axios from 'axios';
 const BASE_URL = import.meta.env.DEV ? `http://${window.location.hostname}:3001` : '';
 const API_URL = `${BASE_URL}/api`;
 
+const compressImage = (file, maxWidth = 1024, quality = 0.7) => {
+    return new Promise((resolve) => {
+        if (!file.type.startsWith('image/')) {
+            return resolve(file);
+        }
+
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (event) => {
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+
+                if (width > maxWidth) {
+                    height = Math.round((height * maxWidth) / width);
+                    width = maxWidth;
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                canvas.toBlob(
+                    (blob) => {
+                        if (!blob) return resolve(file);
+                        const newFile = new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", {
+                            type: 'image/jpeg',
+                            lastModified: Date.now(),
+                        });
+                        resolve(newFile);
+                    },
+                    'image/jpeg',
+                    quality
+                );
+            };
+            img.onerror = () => resolve(file);
+        };
+        reader.onerror = () => resolve(file);
+    });
+};
+
 export const api = {
     getAll: async () => {
         try {
@@ -46,8 +92,10 @@ export const api = {
 
     uploadImage: async (file) => {
         try {
+            const compressedFile = await compressImage(file, 1024, 0.7);
             const formData = new FormData();
-            formData.append('imagen', file);
+            formData.append('imagen', compressedFile);
+            
             const response = await axios.post(`${API_URL}/upload`, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
