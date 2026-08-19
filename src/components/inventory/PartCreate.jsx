@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { useInventory } from '../../context/InventoryContext';
 import { api } from '../../services/api';
 import { LOCATION_OPTIONS } from '../../config/warehouseLayout';
-import { X, Save, Upload, AlertCircle, Image as ImageIcon, MapPin, PlusCircle } from 'lucide-react';
+import { X, Save, Upload, AlertCircle, Image as ImageIcon, MapPin, PlusCircle, Camera } from 'lucide-react';
 import WarehouseVisualizer from '../visualizer/WarehouseVisualizer';
 
 const PartCreate = ({ onClose }) => {
@@ -12,6 +12,7 @@ const PartCreate = ({ onClose }) => {
     const [showPicker, setShowPicker] = useState(false);
     const [pickerTab, setPickerTab] = useState('oficina');
     const fileInputRef = useRef(null);
+    const cameraInputRef = useRef(null);
 
     const [formData, setFormData] = useState({
         cod_producto: '',
@@ -211,15 +212,34 @@ const PartCreate = ({ onClose }) => {
                                         ref={fileInputRef}
                                         onChange={handleImageUpload}
                                     />
-                                    <button
-                                        type="button"
-                                        onClick={() => fileInputRef.current?.click()}
-                                        disabled={isUploading}
-                                        className="w-full md:w-auto px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-medium rounded-lg flex items-center justify-center gap-2 transition-colors disabled:opacity-50 border border-slate-700"
-                                    >
-                                        <Upload size={16} />
-                                        {isUploading ? 'Subiendo...' : 'Subir Imagen Local'}
-                                    </button>
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        capture="environment"
+                                        className="hidden"
+                                        ref={cameraInputRef}
+                                        onChange={handleImageUpload}
+                                    />
+                                    <div className="flex gap-2">
+                                        <button
+                                            type="button"
+                                            onClick={() => fileInputRef.current?.click()}
+                                            disabled={isUploading}
+                                            className="flex-1 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-medium rounded-lg flex items-center justify-center gap-2 transition-colors disabled:opacity-50 border border-slate-700"
+                                        >
+                                            <Upload size={16} />
+                                            {isUploading ? 'Subiendo...' : 'Local'}
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => cameraInputRef.current?.click()}
+                                            disabled={isUploading}
+                                            className="flex-1 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-medium rounded-lg flex items-center justify-center gap-2 transition-colors disabled:opacity-50 border border-slate-700"
+                                        >
+                                            <Camera size={16} />
+                                            Cámara
+                                        </button>
+                                    </div>
                                     <input
                                         name="url_imagen"
                                         value={formData.url_imagen}
